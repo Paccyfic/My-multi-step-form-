@@ -4,6 +4,7 @@ import './MultiStepForm.css';
 interface Plan {
   name: string;
   price: string;
+  icon: string;
   
 }
 
@@ -21,9 +22,9 @@ const MultiStepForm: React.FC = () => {
   const [isYearlyBilling, setIsYearlyBilling] = useState<boolean>(false);
 
   const plans: Plan[] = [
-    { name: 'Arcade', price: '$9/mo' },
-    { name: 'Advanced', price: '$12/mo' },
-    { name: 'Pro', price: '$15/mo' }
+    { name: 'Arcade', price: '$9/mo', icon: 'icon-arcade.svg' },
+    { name: 'Advanced', price: '$12/mo', icon: 'icon-advanced.svg' },
+    { name: 'Pro', price: '$15/mo', icon: 'icon-pro.svg' }
   ];
 
   const addons: Addon[] = [
@@ -100,10 +101,31 @@ const MultiStepForm: React.FC = () => {
               </div>
             )}
             {index === 1 && (
+            <div>
               <div className="header">
                 <h1 className="title">Select your plan</h1>
                 <p className="exp">You have the option of monthly or yearly billing.</p>
               </div>
+              <form>
+                {plans.map((plan, idx) => (
+                  <div key={idx} className={`plan-card ${selectedPlan === plan ? 'selected' : ''}`} onClick={() => handlePlanSelection(plan)}>
+                    <img src={`./assets/images/${plan.icon}`} alt={plan.name} /> {/* Icon */}
+                    <div className="plan-info">
+                      <b>{plan.name}</b>
+                      <span className="plan-priced">{plan.price}</span>
+                    </div>
+                  </div>
+                ))}
+                <div className="switcher">
+                  <p className={`monthly ${!isYearlyBilling ? 'sw-active' : ''}`} onClick={() => setIsYearlyBilling(false)}>Monthly</p>
+                  <label className="switch">
+                    <input type="checkbox" checked={isYearlyBilling} onChange={toggleBillingPeriod} />
+                    <span className="slider round"></span>
+                  </label>
+                  <p className={`yearly ${isYearlyBilling ? 'sw-active' : ''}`} onClick={() => setIsYearlyBilling(true)}>Yearly</p>
+                </div>
+              </form>
+            </div>
             )}
             {index === 2 && (
               <div className="header">
@@ -118,9 +140,14 @@ const MultiStepForm: React.FC = () => {
               </div>
             )}
             {index === 4 && (
-              <div className="header">
-                <h1 className="title">Thank you!</h1>
-                <p className="exp">Thanks for confirming your subscription! We hope you have fun using our platform. If you ever need support, please feel free to email us at support@loremgaming.com.</p>
+              <div className="stp step-5">
+                <img src="./assets/images/icon-thank-you.svg" alt="Thank You" /> {/* Thank You Icon */}
+                <div className="header">
+                  <h1 className="title">Thank you!</h1>
+                 <p className="exp">
+                  Thanks for confirming your subscription! We hope you have fun using our platform. If you ever need support, please feel free to email us at support@loremgaming.com.
+                 </p>
+               </div>
               </div>
             )}
             {index === 0 && (
