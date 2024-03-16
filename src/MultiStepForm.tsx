@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './MultiStepForm.css';
 
 interface Plan {
@@ -20,6 +20,9 @@ const MultiStepForm: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [selectedAddons, setSelectedAddons] = useState<Addon[]>([]);
   const [isYearlyBilling, setIsYearlyBilling] = useState<boolean>(false);
+  const [planPrice, setPlanPrice] = useState<string>('');
+  const [total, setTotal] = useState<number>(0);
+  const [time, setTime] = useState<boolean>(false); // Assuming time is a boolean indicating whether it's yearly or monthly
 
   const plans: Plan[] = [
     { name: 'Arcade', price: '$9/mo', icon: 'icon-arcade.svg' },
@@ -43,8 +46,14 @@ const MultiStepForm: React.FC = () => {
     setCurrentStep(currentStep - 1);
   };
 
-  const handlePlanSelection = (plan: Plan) => {
+  const handlePlanSelection = (plan: any) => {
     setSelectedPlan(plan);
+
+    if (isYearlyBilling) {
+      const yearlyPrice = parseInt(plan.price.slice(1)) * 12;
+      const updatedPlan = { ...plan, price: `$${yearlyPrice}/yr` };
+      setSelectedPlan(updatedPlan);
+    }
   };
 
   const handleAddonSelection = (addon: Addon) => {
@@ -74,6 +83,27 @@ const MultiStepForm: React.FC = () => {
   const toggleBillingPeriod = () => {
     setIsYearlyBilling(!isYearlyBilling);
   };
+
+
+
+  const calculateTotal = () => {
+    const priceStr = planPrice.replace(/\D/g, '');
+    const addonPrices = document.querySelectorAll('.selected-addon .servic-price');
+    let val = 0;
+    for (let i = 0; i < addonPrices.length; i++) {
+      const addonStr = addonPrices[i].innerHTML;
+      const addonRes = addonStr.replace(/\D/g, '');
+      val += Number(addonRes);
+    }
+    return val + Number(priceStr);
+
+    
+  };
+   
+  useEffect(() => {
+    setTotal(calculateTotal());
+  }, [planPrice, time]);
+
 
   return (
     <div className="form">
@@ -107,24 +137,26 @@ const MultiStepForm: React.FC = () => {
                 <p className="exp">You have the option of monthly or yearly billing.</p>
               </div>
               <form>
+
                 {plans.map((plan, idx) => (
                   <div key={idx} className={`plan-card ${selectedPlan === plan ? 'selected' : ''}`} onClick={() => handlePlanSelection(plan)}>
                     <img src={`./assets/images/${plan.icon}`} alt={plan.name} /> {/* Icon */}
                     <div className="plan-info">
                       <b>{plan.name}</b>
-                      <span className="plan-priced">{plan.price}</span>
+                      <span className="plan-priced">{isYearlyBilling ? `$${parseInt(plan.price.slice(1)) * 12}/yr` : plan.price}</span>
                     </div>
                   </div>
                 ))}
-                <div className="switcher">
+               
+              </form>
+               <div className="switcher">
                   <p className={`monthly ${!isYearlyBilling ? 'sw-active' : ''}`} onClick={() => setIsYearlyBilling(false)}>Monthly</p>
                   <label className="switch">
-                    <input type="checkbox" checked={isYearlyBilling} onChange={toggleBillingPeriod} />
+                    <input type="checkbox"  checked={isYearlyBilling} onChange={toggleBillingPeriod} />
                     <span className="slider round"></span>
                   </label>
                   <p className={`yearly ${isYearlyBilling ? 'sw-active' : ''}`} onClick={() => setIsYearlyBilling(true)}>Yearly</p>
                 </div>
-              </form>
             </div>
             )}
             {index === 2 && (
@@ -134,14 +166,42 @@ const MultiStepForm: React.FC = () => {
               </div>
             )}
             {index === 3 && (
+             <div>
               <div className="header">
-                <h1 className="title">Finishing up</h1>
-                <p className="exp">Double-check everything looks OK before confirming.</p>
+                 <h1 className="title">Finishing up</h1>
+                 <p className="exp">Double-check everything looks OK before confirming.</p>
               </div>
+         
+             <div className="selection-box">
+             <div className="selection-container">
+             <div className="selected-plan">
+               {/* Display selected plan name and price */}
+               <p className="plan-name">{selectedPlan?.name}{isYearlyBilling ? "(Yearly)" : "(Monthly)"}</p>
+               <p className="plan-price">{selectedPlan?.price}</p>
+             </div>
+             <hr />
+             <div className="addons">
+               {/* Display selected addons */}
+               {selectedAddons.map((addon, idx) => (
+               <div key={idx} className="selected-addon">
+                 <span className="service-name">{addon.name}</span>
+                 <span className="servic-price">{addon.price}</span>
+               </div>
+          ))}
+        </div>
+      </div>
+      {/* Display total */}
+      
+      <p className="total">Total (per {isYearlyBilling ? "year" : "month"}): <b> {calculateTotal()}</b></p> 
+    </div>
+             </div>
             )}
             {index === 4 && (
-              <div className="stp step-5">
-                <img src="./assets/images/icon-thank-you.svg" alt="Thank You" /> {/* Thank You Icon */}
+              <div>
+                <div>
+                  <img src="./assets/images/icon-thank-you.svg" alt="" />
+                </div>
+                
                 <div className="header">
                   <h1 className="title">Thank you!</h1>
                  <p className="exp">
@@ -169,17 +229,7 @@ const MultiStepForm: React.FC = () => {
                 <input required type="tel" id="phone" placeholder="e.g. +1 234 567 890" />
               </form>
             )}
-            {index === 1 && (
-              <form>
-                {plans.map((plan, idx) => (
-                  <div key={idx} className={`plan-card ${selectedPlan === plan ? 'selected' : ''}`} onClick={() => handlePlanSelection(plan)}>
-                    <b>{plan.name}</b>
-                    <span className="plan-priced">{plan.price}</span>
-                  </div>
-                  
-                ))}
-              </form>
-            )}
+            
             {index === 2 && (
               <form>
                 {addons.map((addon, idx) => (
@@ -194,36 +244,8 @@ const MultiStepForm: React.FC = () => {
                 ))}
               </form>
             )}
-            {index === 3 && (
-              <div className="summary">
-                <div className="plan">
-                  <b>Plan:</b>
-                  <span>{selectedPlan?.name}</span>
-                  <span>{selectedPlan?.price}</span>
-                </div>
-                <div className="addons">
-                  <b>Add-ons:</b>
-                  {selectedAddons.map((addon, idx) => (
-                    <div key={idx}>
-                      <span>{addon.name}</span>
-                      <span>{addon.price}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="billing">
-                  <b>Billing:</b>
-                  <div className="radio">
-                    <input type="radio" id="monthly" checked={!isYearlyBilling} onChange={toggleBillingPeriod} />
-                    <label htmlFor="monthly">Monthly</label>
-                  </div>
-                  <div className="radio">
-                    <input type="radio" id="yearly" checked={isYearlyBilling} onChange={toggleBillingPeriod} />
-                    <label htmlFor="yearly">Yearly</label>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div className="actions">
+    
+            <div className="btns">
               {index > 0 && <button className="prev-stp" onClick={handlePrevStep}>Previous</button>}
               {index < 4 && <button className="next-stp" onClick={handleNextStep}>Next</button>}
             </div>
@@ -235,3 +257,4 @@ const MultiStepForm: React.FC = () => {
 };
 
 export default MultiStepForm;
+
