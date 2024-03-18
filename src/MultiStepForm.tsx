@@ -87,22 +87,15 @@ const MultiStepForm: React.FC = () => {
 
 
   const calculateTotal = () => {
-    const priceStr = planPrice.replace(/\D/g, '');
-    const addonPrices = document.querySelectorAll('.selected-addon .servic-price');
-    let val = 0;
-    for (let i = 0; i < addonPrices.length; i++) {
-      const addonStr = addonPrices[i].innerHTML;
-      const addonRes = addonStr.replace(/\D/g, '');
-      val += Number(addonRes);
-    }
-    return val + Number(priceStr);
-
-    
+    const priceStr = selectedPlan ? selectedPlan.price.replace(/\D/g, '') : '0';
+    const addonTotal = selectedAddons.reduce((acc, addon) => acc + parseInt(addon.price.replace(/\D/g, ''), 10), 0);
+    const planTotal = isYearlyBilling ? parseInt(priceStr, 10) * 12 : parseInt(priceStr, 10);
+    const total = planTotal + addonTotal;
+    const billingPeriod = isYearlyBilling ? '/yr' : '/mo';
+    return { total, billingPeriod };
   };
    
-  useEffect(() => {
-    setTotal(calculateTotal());
-  }, [planPrice, time]);
+  
 
 
   return (
@@ -192,22 +185,24 @@ const MultiStepForm: React.FC = () => {
       </div>
       {/* Display total */}
       
-      <p className="total">Total (per {isYearlyBilling ? "year" : "month"}): <b> {calculateTotal()}</b></p> 
+      <p className="total">Total (per {isYearlyBilling ? "year" : "month"}): <b> ${calculateTotal().total}{calculateTotal().billingPeriod}</b></p> 
     </div>
              </div>
             )}
             {index === 4 && (
-              <div>
                 <div>
-                  <img src="./assets/images/icon-thank-you.svg" alt="" />
-                </div>
+                  <div>
+                   <img src="./assets/images/icon-thank-you.svg" alt="" />
+                  </div> 
+                 
                 
-                <div className="header">
-                  <h1 className="title">Thank you!</h1>
-                 <p className="exp">
-                  Thanks for confirming your subscription! We hope you have fun using our platform. If you ever need support, please feel free to email us at support@loremgaming.com.
-                 </p>
-               </div>
+                
+                 <div className="header">
+                   <h1 className="title">Thank you!</h1>
+                   <p className="exp">
+                    Thanks for confirming your subscription! We hope you have fun using our platform. If you ever need support, please feel free to email us at support@loremgaming.com.
+                   </p>
+                 </div>
               </div>
             )}
             {index === 0 && (

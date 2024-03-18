@@ -322,6 +322,10 @@
   .step-5 button {
     display: none;
   }
+  
+
+
+
   /* SWITCH classes */
   .switcher {
     background-color: var(--Magnolia);
