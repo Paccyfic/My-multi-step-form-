@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './MultiStepForm.css';
+import './assets/images/icon-thank-you.svg'
 
 interface Plan {
   name: string;
@@ -192,7 +193,7 @@ const MultiStepForm: React.FC = () => {
             {index === 4 && (
                 <div>
                   <div>
-                   <img src="./assets/images/icon-thank-you.svg" alt="" />
+                   <img src="/icon-thank-you.svg" alt="" />
                   </div> 
                  
                 
