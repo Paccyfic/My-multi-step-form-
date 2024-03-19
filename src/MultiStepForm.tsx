@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useState } from 'react';
 import './MultiStepForm.css';
 import './assets/images/icon-thank-you.svg'
 
@@ -21,9 +21,9 @@ const MultiStepForm: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [selectedAddons, setSelectedAddons] = useState<Addon[]>([]);
   const [isYearlyBilling, setIsYearlyBilling] = useState<boolean>(false);
-  const [planPrice, setPlanPrice] = useState<string>('');
-  const [total, setTotal] = useState<number>(0);
-  const [time, setTime] = useState<boolean>(false); // Assuming time is a boolean indicating whether it's yearly or monthly
+  // const [planPrice, setPlanPrice] = useState<string>('');
+  // const [total, setTotal] = useState<number>(0);
+  // const [time, setTime] = useState<boolean>(false); // Assuming time is a boolean indicating whether it's yearly or monthly
 
   const plans: Plan[] = [
     { name: 'Arcade', price: '$9/mo', icon: 'icon-arcade.svg' },
