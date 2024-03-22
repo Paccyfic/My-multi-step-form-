@@ -24,6 +24,9 @@ const MultiStepForm: React.FC = () => {
   // const [planPrice, setPlanPrice] = useState<string>('');
   // const [total, setTotal] = useState<number>(0);
   // const [time, setTime] = useState<boolean>(false); // Assuming time is a boolean indicating whether it's yearly or monthly
+  const [nameError, setNameError] = useState<boolean>(false);
+  const [emailError, setEmailError] = useState<boolean>(false);
+  const [phoneError, setPhoneError] = useState<boolean>(false);
 
   const plans: Plan[] = [
     { name: 'Arcade', price: '$9/mo', icon: 'icon-arcade.svg' },
@@ -67,17 +70,34 @@ const MultiStepForm: React.FC = () => {
   };
 
   const validateForm = () => {
-    const inputs = document.querySelectorAll('.step-1 input');
+    //const inputs = document.querySelectorAll('.step-1 input');
     let isValid = true;
-    inputs.forEach((input) => {
-      if (!(input instanceof HTMLInputElement)) return; 
-      if (!input.value) {
+    if (currentStep === 1) {
+      const nameInput = document.getElementById('name') as HTMLInputElement;
+      const emailInput = document.getElementById('email') as HTMLInputElement;
+      const phoneInput = document.getElementById('phone') as HTMLInputElement;
+
+      if (!nameInput.value) {
+        setNameError(true);
         isValid = false;
-        input.classList.add('err');
       } else {
-        input.classList.remove('err');
+        setNameError(false);
       }
-    });
+
+      if (!emailInput.value) {
+        setEmailError(true);
+        isValid = false;
+      } else {
+        setEmailError(false);
+      }
+
+      if (!phoneInput.value) {
+        setPhoneError(true);
+        isValid = false;
+      } else {
+        setPhoneError(false);
+      }
+    }
     return isValid;
   };
 
@@ -210,17 +230,17 @@ const MultiStepForm: React.FC = () => {
               <form>
                 <div className="label">
                   <label htmlFor="name">Name</label>
-                  <p className="error">This Field Is Required</p>
+                  {nameError && <p className="error">This Field Is Required</p>}
                 </div>
                 <input required type="text" id="name" placeholder="e.g. Stephen King" />
                 <div className="label">
                   <label htmlFor="email">Email Address</label>
-                  <p className="error">This Field Is Required</p>
+                  {emailError && <p className="error">This Field Is Required</p>}
                 </div>
                 <input required type="text" id="email" placeholder="e.g. stephenking@lorem.com" />
                 <div className="label">
                   <label htmlFor="phone">Phone Number</label>
-                  <p className="error">This Field Is Required</p>
+                 {phoneError && <p className="error">This Field Is Required</p>}
                 </div>
                 <input required type="tel" id="phone" placeholder="e.g. +1 234 567 890" />
               </form>

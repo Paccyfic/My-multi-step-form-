@@ -148,7 +148,7 @@
     font-family: inherit;
   }
   form .error {
-    display: none;
+    display: block;
     color: var(--Strawberry-red);
     font-size: 0.9rem;
     font-weight: 700;
